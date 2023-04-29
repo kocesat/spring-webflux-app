@@ -3,6 +3,7 @@ package com.kocesat.reaactiveref.service;
 import com.kocesat.reaactiveref.client.student.StudentClient;
 import com.kocesat.reaactiveref.client.student.StudentServerRequest;
 import com.kocesat.reaactiveref.model.Student;
+import com.kocesat.reaactiveref.util.web.ListUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,16 +26,7 @@ public class StudentService {
     List<Student> students = new ArrayList<>();
     int maxCount = page * pageSize;
     return callStudentApiRecursively(serverRequest, students, maxCount)
-      .flatMap(allStudents -> Mono.just(paginated(allStudents, page, pageSize)));
-  }
-
-  private List<Student> paginated(List<Student> allStudents, int page, int pageSize) {
-    int fromIndex = (page - 1) * pageSize;
-    if (fromIndex > allStudents.size() - 1) {
-      return Collections.emptyList();
-    }
-    int lastIndex = Math.min(fromIndex + pageSize, allStudents.size());
-    return allStudents.subList(fromIndex, lastIndex);
+      .flatMap(allStudents -> Mono.just(ListUtil.paginate(allStudents, page, pageSize)));
   }
 
   public Mono<List<Student>> callStudentApiRecursively(
@@ -57,7 +49,8 @@ public class StudentService {
       });
   }
 
+
   private static Long lastId(List<Student> students) {
-    return students.get(students.size() - 1).getId();
+    return students.get(ListUtil.lastIndex(students)).getId();
   }
 }
