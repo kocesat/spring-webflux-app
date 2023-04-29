@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Data
 @Builder
@@ -27,4 +28,6 @@ public class BindingDto {
   @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
   @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
   private LocalDateTime requestTime;
+
+  private ZonedDateTime requestTimeWithZone;
 }

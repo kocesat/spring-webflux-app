@@ -9,6 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+
 @RestController
 @RequestMapping("binding")
 @RequiredArgsConstructor
@@ -18,6 +23,8 @@ public class BindingController {
 
   @PostMapping
   public Mono<ResponseEntity<BaseResponse>> checkBinding(@RequestBody BindingDto dto) {
+    var localDateTime = LocalDateTime.ofInstant(dto.getRequestTimeWithZone().toInstant(), ZoneId.systemDefault());
+    log.info(localDateTime.toString());
     return service.handleBinding(dto)
       .flatMap(bindingDto -> {
         log.info(dto.toString());
