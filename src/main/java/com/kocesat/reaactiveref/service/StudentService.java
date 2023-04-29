@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -41,7 +40,7 @@ public class StudentService {
       )))
       .flatMap(serverResponse -> {
         students.addAll(serverResponse.getStudentList());
-        if (serverResponse.isHasMore() && students.size() < maxCount) {
+        if (serverResponse.hasMore() && students.size() < maxCount) {
           serverRequest.setLastId(lastId(serverResponse.getStudentList()));
           return callStudentApiRecursively(serverRequest, students, maxCount);
         }

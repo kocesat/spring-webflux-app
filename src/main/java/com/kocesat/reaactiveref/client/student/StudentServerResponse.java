@@ -2,10 +2,7 @@ package com.kocesat.reaactiveref.client.student;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kocesat.reaactiveref.model.Student;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -14,8 +11,13 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StudentServerResponse {
+  @Getter(AccessLevel.NONE)
   private boolean hasMore;
-
   @JsonProperty("students")
   private List<Student> studentList;
+
+  @JsonProperty("devamFlag")
+  public boolean hasMore() {
+    return hasMore;
+  }
 }
