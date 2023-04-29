@@ -8,13 +8,13 @@ import java.util.List;
 @UtilityClass
 public final class ListUtil {
 
-  public static <T> int lastIndex(List<T> sourceList) {
+  public static <T> int lastIndexOf(List<T> sourceList) {
     return sourceList.size() - 1;
   }
 
   public static <T> List<T> paginate(List<T> list, int page, int pageSize) {
     int fromIndex = (page - 1) * pageSize;
-    if (fromIndex > list.size() - 1) {
+    if (fromIndex > lastIndexOf(list)) {
       return Collections.emptyList();
     }
     int lastIndex = Math.min(fromIndex + pageSize, list.size());

@@ -50,6 +50,6 @@ public class StudentService {
 
 
   private static Long lastId(List<Student> students) {
-    return students.get(ListUtil.lastIndex(students)).getId();
+    return students.get(ListUtil.lastIndexOf(students)).getId();
   }
 }
