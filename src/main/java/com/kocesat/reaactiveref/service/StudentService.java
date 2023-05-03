@@ -28,7 +28,7 @@ public class StudentService {
       .flatMap(allStudents -> Mono.just(ListUtil.paginate(allStudents, page, pageSize)));
   }
 
-  public Mono<List<Student>> callStudentApiRecursively(
+  private Mono<List<Student>> callStudentApiRecursively(
     StudentServerRequest serverRequest,
     List<Student> students,
     int maxCount
@@ -47,7 +47,6 @@ public class StudentService {
         return Mono.just(students);
       });
   }
-
 
   private static Long lastId(List<Student> students) {
     return students.get(ListUtil.lastIndexOf(students)).getId();
