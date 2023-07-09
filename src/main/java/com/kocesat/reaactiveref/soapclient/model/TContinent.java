@@ -8,6 +8,7 @@
 
 package com.kocesat.reaactiveref.soapclient.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -54,6 +55,7 @@ public class TContinent {
      *     {@link String }
      *     
      */
+    @JsonProperty("sCode")
     public String getSCode() {
         return sCode;
     }
@@ -78,6 +80,7 @@ public class TContinent {
      *     {@link String }
      *     
      */
+    @JsonProperty("sName")
     public String getSName() {
         return sName;
     }

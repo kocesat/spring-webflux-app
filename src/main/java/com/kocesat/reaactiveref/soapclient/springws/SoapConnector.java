@@ -1,4 +1,4 @@
-package com.kocesat.reaactiveref.soapclient;
+package com.kocesat.reaactiveref.soapclient.springws;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;

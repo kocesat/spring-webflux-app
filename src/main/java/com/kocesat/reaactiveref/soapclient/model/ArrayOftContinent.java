@@ -10,6 +10,9 @@ package com.kocesat.reaactiveref.soapclient.model;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -42,6 +45,7 @@ import jakarta.xml.bind.annotation.XmlType;
 public class ArrayOftContinent {
 
     @XmlElement(nillable = true)
+    @JacksonXmlElementWrapper(useWrapping = false)
     protected List<TContinent> tContinent;
 
     /**

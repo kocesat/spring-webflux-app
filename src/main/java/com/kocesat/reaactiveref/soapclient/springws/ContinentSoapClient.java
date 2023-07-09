@@ -1,4 +1,4 @@
-package com.kocesat.reaactiveref.soapclient;
+package com.kocesat.reaactiveref.soapclient.springws;
 
 import com.kocesat.reaactiveref.soapclient.model.ListOfContinentsByName;
 import com.kocesat.reaactiveref.soapclient.model.ListOfContinentsByNameResponse;

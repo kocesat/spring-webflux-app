@@ -8,6 +8,8 @@
 
 package com.kocesat.reaactiveref.soapclient.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRootName;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -42,6 +44,7 @@ import jakarta.xml.bind.annotation.XmlType;
 public class ListOfContinentsByNameResponse {
 
     @XmlElement(name = "ListOfContinentsByNameResult", required = true)
+    @JsonProperty("ListOfContinentsByNameResult")
     protected ArrayOftContinent listOfContinentsByNameResult;
 
     /**
