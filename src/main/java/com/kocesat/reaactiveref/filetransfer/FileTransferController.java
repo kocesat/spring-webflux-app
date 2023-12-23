@@ -1,8 +1,7 @@
-package com.kocesat.reaactiveref.controller;
+package com.kocesat.reaactiveref.filetransfer;
 
-import com.kocesat.reaactiveref.model.document.FileUploadResponse;
-import com.kocesat.reaactiveref.model.document.SingleFileUploadResponse;
-import com.kocesat.reaactiveref.service.FileTransferService;
+import com.kocesat.reaactiveref.filetransfer.model.FileUploadResponse;
+import com.kocesat.reaactiveref.filetransfer.model.SingleFileUploadResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -31,8 +30,10 @@ public class FileTransferController {
 
   @PostMapping("/single-upload")
   public Mono<SingleFileUploadResponse> singleUpload(
-    Mono<FilePart> filePartMono, @RequestParam("type") Integer type) {
-    return filePartMono.flatMap(filePart -> fileTransferService.singleUpload(type, filePart));
+    @RequestPart FilePart filePart,
+    @RequestParam("type") Integer type
+  ) {
+    return fileTransferService.singleUpload(type, filePart);
   }
 
   @GetMapping("/download")

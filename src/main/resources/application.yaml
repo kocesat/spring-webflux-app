@@ -1,0 +1,11 @@
+server:
+  port:8081
+category:
+  map: "{ \
+    shoes: \"1\", \
+    pants: \"2\" \
+}"
+fileType: "{\
+  domain1: \"23\", \
+  domain2: \"24\" \
+}"

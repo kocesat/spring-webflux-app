@@ -1,31 +1,31 @@
-package com.kocesat.reaactiveref.service;
+package com.kocesat.reaactiveref.filetransfer;
 
-import com.kocesat.reaactiveref.model.document.FileUploadException;
-import com.kocesat.reaactiveref.model.document.FileUploadResponse;
-import com.kocesat.reaactiveref.model.document.SingleFileUploadResponse;
-import io.netty.handler.codec.http.multipart.FileUpload;
+import com.kocesat.reaactiveref.filetransfer.model.FileUploadException;
+import com.kocesat.reaactiveref.filetransfer.model.FileUploadResponse;
+import com.kocesat.reaactiveref.filetransfer.model.SingleFileUploadResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
-import org.aspectj.util.FileUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileCopyUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
 public class FileTransferService {
+
+  @Value("#{${fileType}}")
+  private Map<String, String> fileTypeMap;
+
+  private static final Map<Integer, String> fileDomainMap = Map.of(1, "domain1", 2, "domain2");
 
   public Flux<byte[]> getDownloadableFile() {
     Resource file = new ClassPathResource("files/example-file.txt");
@@ -51,31 +51,26 @@ public class FileTransferService {
   }
 
   public Mono<SingleFileUploadResponse> singleUpload(Integer type, FilePart filePart) {
-    return authMono()
-      .flatMap(x -> {
-        List<Integer> acceptedTypes = List.of(1, 2);
-        List<String> allowedExtensions = List.of("txt", "xlsx", "png", "jpg", "PDF", "pptx");
-        if (!acceptedTypes.contains(type)) {
-          return Mono.error(new FileUploadException("INVALID_TYPE"));
-        }
-        String extension = FilenameUtils.getExtension(filePart.filename());
-        if (allowedExtensions
-            .stream()
-            .noneMatch(allowedExt -> allowedExt.equalsIgnoreCase(extension))) {
-          return Mono.error(new FileUploadException("INVALID_EXTENSION"));
-        }
-        return doUpload(filePart);
-      })
-      .onErrorResume(e -> {
-        SingleFileUploadResponse response = SingleFileUploadResponse.fail("Default Message");
-        if (e instanceof FileUploadException fileUploadException) {
-          response.setMessage(fileUploadException.getErrorCode());
-        }
-        return Mono.just(response);
-      });
+    return getLocale()
+      .flatMap(locale ->
+        validateAndUpload(filePart, type)
+          .onErrorResume(FileTransferService::handleBusinessError));
   }
 
-  public Mono<SingleFileUploadResponse> doUpload(FilePart filePart) {
+  public Mono<SingleFileUploadResponse> validateAndUpload(FilePart filePart, Integer type) {
+    if (!fileDomainMap.containsKey(type)) {
+      return Mono.error(new FileUploadException("INVALID_TYPE"));
+    }
+    final String fileTypeCode = fileTypeMap.get(fileDomainMap.get(type));
+    log.info("File Type code resolved: " + fileTypeCode);
+
+    List<String> allowedExtensions = List.of("txt", "xlsx", "png", "jpg", "pdf", "pptx", "jpeg");
+    String extension = FilenameUtils.getExtension(filePart.filename());
+    if (allowedExtensions
+      .stream()
+      .noneMatch(allowedExt -> allowedExt.equalsIgnoreCase(extension))) {
+      return Mono.error(new FileUploadException("INVALID_EXTENSION"));
+    }
     return DataBufferUtils.join(filePart.content())
       .map(dataBuffer -> {
         int size = dataBuffer.readableByteCount();
@@ -96,7 +91,19 @@ public class FileTransferService {
       });
   }
 
-  private static Mono<String> authMono() {
-    return Mono.just("");
+  private String getFileCode(String domain) {
+    return fileTypeMap.get(domain);
+  }
+
+  private static Mono<String> getLocale() {
+    return Mono.just("tr");
+  }
+
+  private static Mono<SingleFileUploadResponse> handleBusinessError(Throwable e) {
+    SingleFileUploadResponse response = SingleFileUploadResponse.fail("Default Message");
+    if (e instanceof FileUploadException fileUploadException) {
+      response.setMessage(fileUploadException.getErrorCode());
+    }
+    return Mono.just(response);
   }
 }
