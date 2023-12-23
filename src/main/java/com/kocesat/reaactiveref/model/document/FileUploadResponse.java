@@ -1,4 +1,4 @@
-package com.kocesat.reaactiveref.model;
+package com.kocesat.reaactiveref.model.document;
 
 import lombok.Builder;
 import lombok.Value;
