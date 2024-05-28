@@ -15,22 +15,33 @@ import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class ClientConfig {
-  private final static int TIMEOUT_IN_MS = 10000;
+  private static final int TIMEOUT_IN_MS = 10000;
 
   @Bean
   @Qualifier("studentWebClient")
   public WebClient studentWebClient() {
-    final HttpClient httpClient = HttpClient.create()
-      .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, TIMEOUT_IN_MS)
-      .responseTimeout(Duration.ofMillis(TIMEOUT_IN_MS))
-      .doOnConnected(conn -> {
-        conn.addHandlerLast(new ReadTimeoutHandler(TIMEOUT_IN_MS, TimeUnit.MILLISECONDS))
-          .addHandlerLast(new WriteTimeoutHandler(TIMEOUT_IN_MS, TimeUnit.MILLISECONDS));
-      });
-
     return WebClient.builder()
-      .clientConnector(new ReactorClientHttpConnector(httpClient))
-      .baseUrl("http://localhost:8080/students")
-      .build();
+        .clientConnector(new ReactorClientHttpConnector(baseHttpClient()))
+        .baseUrl("http://localhost:8080/students")
+        .build();
+  }
+
+  @Bean
+  @Qualifier("jsonPlaceholderWebClient")
+  public WebClient jsonPlaceholderWebClient() {
+    return WebClient.builder()
+        .clientConnector(new ReactorClientHttpConnector(baseHttpClient()))
+        .baseUrl("https://jsonplaceholder.typicode.com")
+        .build();
+  }
+
+  @Bean
+  public HttpClient baseHttpClient() {
+    return HttpClient.create()
+        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, TIMEOUT_IN_MS)
+        .responseTimeout(Duration.ofMillis(TIMEOUT_IN_MS))
+        .doOnConnected(conn -> conn.addHandlerLast(
+                new ReadTimeoutHandler(TIMEOUT_IN_MS, TimeUnit.MILLISECONDS))
+            .addHandlerLast(new WriteTimeoutHandler(TIMEOUT_IN_MS, TimeUnit.MILLISECONDS)));
   }
 }
